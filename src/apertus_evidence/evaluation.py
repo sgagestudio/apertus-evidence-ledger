@@ -32,8 +32,19 @@ def load_cases(path: str | Path) -> list[dict]:
             expected_abstain = value.get("expected_abstain", False)
             if not isinstance(expected_abstain, bool):
                 raise ValueError(f"expected_abstain must be boolean: {line[:80]}")
-            if not expected_abstain and not isinstance(value.get("required_evidence_substring"), str):
-                raise ValueError(f"grounded case needs required_evidence_substring: {line[:80]}")
+            if not expected_abstain:
+                single = value.get("required_evidence_substring")
+                multiple = value.get("required_evidence_substrings")
+                single_ok = isinstance(single, str) and bool(single.strip())
+                multiple_ok = (
+                    isinstance(multiple, list)
+                    and bool(multiple)
+                    and all(isinstance(item, str) and item.strip() for item in multiple)
+                )
+                if not (single_ok or multiple_ok):
+                    raise ValueError(
+                        f"grounded case needs required evidence substring(s): {line[:80]}"
+                    )
             rows.append(value)
     if not rows:
         raise ValueError("evaluation dataset is empty")
@@ -60,14 +71,19 @@ def evaluate_case(case: dict, service: EvidenceService) -> EvalResult:
         passed = result.abstain and not result.citations
         reason = "correct abstention" if passed else "expected abstention but model answered"
     else:
-        required = " ".join(case["required_evidence_substring"].split())
+        raw_required = case.get("required_evidence_substrings")
+        if raw_required is None:
+            raw_required = [case["required_evidence_substring"]]
+        required = [" ".join(item.split()) for item in raw_required]
         cited = " ".join(
             " ".join(citation["quote"].split())
             for citation in result.citations
         )
-        passed = not result.abstain and required in cited
+        passed = not result.abstain and all(item in cited for item in required)
         reason = "grounded evidence found" if passed else (
-            "unexpected abstention" if result.abstain else "required evidence was not cited"
+            "unexpected abstention"
+            if result.abstain
+            else "required evidence was not fully cited"
         )
     return EvalResult(
         case_id=case["id"],
