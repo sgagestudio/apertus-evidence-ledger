@@ -20,7 +20,7 @@ or
 
 Rules:
 - supported=true only when the requested fact is explicitly stated or follows from a trivial direct reading of the supplied evidence.
-- If the question asks for a detail that is absent, such as a provider, person, price, algorithm, phone number, identifier, date, or other missing attribute, return false.
+- If any information required to answer the question is absent from the supplied evidence, return false.
 - Do not use outside knowledge.
 - Do not answer the question.
 - Do not explain your decision.
