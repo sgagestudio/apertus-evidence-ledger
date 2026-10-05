@@ -19,6 +19,7 @@ class EvalResult:
     abstain: bool
     citation_count: int
     answer_attempt_count: int
+    verified_quotes: tuple[str, ...]
     reason: str
 
 
@@ -65,6 +66,7 @@ def evaluate_case(case: dict, service: EvidenceService) -> EvalResult:
             abstain=False,
             citation_count=0,
             answer_attempt_count=0,
+            verified_quotes=(),
             reason=f"rejected model output: {exc}",
         )
 
@@ -94,6 +96,9 @@ def evaluate_case(case: dict, service: EvidenceService) -> EvalResult:
         abstain=result.abstain,
         citation_count=len(result.citations),
         answer_attempt_count=int(result.ledger.get("answer_attempt_count", 0)),
+        verified_quotes=tuple(
+            str(citation["quote"]) for citation in result.citations
+        ),
         reason=reason,
     )
 
