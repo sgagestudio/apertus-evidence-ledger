@@ -77,7 +77,7 @@ Current validated result:
 - 6 missing-information abstentions;
 - 6 document prompt-injection abstentions;
 - 6 languages: English, Spanish, German, French, Italian and Romansh;
-- 15 / 15 software tests.
+- 19 / 19 current software tests.
 
 Add:
 
