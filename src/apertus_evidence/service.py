@@ -123,12 +123,35 @@ class EvidenceService:
                 ),
             )
 
+        answer_attempts: list[dict] = []
         answer_raw = self.model.generate_json(
             system=SYSTEM_PROMPT,
             user=prompt,
         )
-        answer, abstain, citations = verify_model_answer(answer_raw, hits)
-        trace = {"support_gate": support_raw, "answer": answer_raw}
+        answer_attempts.append(answer_raw)
+        try:
+            answer, abstain, citations = verify_model_answer(answer_raw, hits)
+        except EvidenceVerificationError as first_error:
+            repair_prompt = (
+                prompt
+                + "\n\nThe previous JSON response was rejected by the "
+                + "deterministic verifier for this reason: "
+                + str(first_error)
+                + ". Return one corrected JSON object. Re-copy every citation "
+                + "quote exactly from the supplied evidence. Do not add facts "
+                + "or citations that are not present in the evidence."
+            )
+            repaired_raw = self.model.generate_json(
+                system=SYSTEM_PROMPT,
+                user=repair_prompt,
+            )
+            answer_attempts.append(repaired_raw)
+            answer, abstain, citations = verify_model_answer(repaired_raw, hits)
+
+        trace = {
+            "support_gate": support_raw,
+            "answer_attempts": answer_attempts,
+        }
         return VerifiedAnswer(
             answer=answer,
             abstain=abstain,
