@@ -22,7 +22,7 @@ The organizer states that the final submission is handled through the Hack Apert
 - [x] Current isolated real-model regression: 17/18; one supported Romansh answer rejected for a non-exact source quote. Historical pre-isolation 18/18 artifact retained but not used as the current headline.
 - [x] Original separate holdout 12/12; unchanged holdout also revalidated 12/12 with current per-case isolation.
 - [x] Current multi-evidence real-model set: 3/3.
-- [x] 19/19 current software tests.
+- [x] 20/20 current software tests.
 - [x] Document prompt-injection cases included.
 - [x] Technical report committed.
 - [x] Machine-readable evaluation result committed.
