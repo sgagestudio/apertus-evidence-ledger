@@ -138,3 +138,4 @@ Run it against a real Apertus endpoint:
     apertus-evidence-eval --dataset eval/multilingual.jsonl --base-url http://localhost:8000/v1 --out evaluation-report.json
 
 A case passes only when Apertus returns a non-abstaining answer and its verified citations contain the required source evidence. Invalid chunk IDs or invented quotes fail earlier in the citation verifier, so the reported grounded accuracy is measured after structural verification.
+\n\nA separate independent 12-case holdout passes 12/12 with real local Apertus (6 grounded + 6 abstentions across EN/ES/DE/FR/IT/RM). This remains a small synthetic engineering check, not a general accuracy benchmark.\n
