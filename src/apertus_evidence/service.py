@@ -161,7 +161,14 @@ def verify_model_answer(raw: dict, hits: list[SearchHit]) -> tuple[str, bool, li
             raise EvidenceVerificationError("each citation must be an object")
         chunk_id = item.get("chunk_id")
         quote = item.get("quote")
-        if not isinstance(chunk_id, int) or chunk_id not in by_id:
+
+        # Models sometimes serialize an integer JSON field as a decimal string.
+        # Accept that narrow representation only; never coerce floats, booleans,
+        # signs, whitespace-padded values, or arbitrary strings.
+        if isinstance(chunk_id, str) and chunk_id.isascii() and chunk_id.isdecimal():
+            chunk_id = int(chunk_id)
+
+        if isinstance(chunk_id, bool) or not isinstance(chunk_id, int) or chunk_id not in by_id:
             raise EvidenceVerificationError(f"citation references unknown chunk_id: {chunk_id!r}")
         if not isinstance(quote, str) or not quote.strip():
             raise EvidenceVerificationError("citation quote must be non-empty")
