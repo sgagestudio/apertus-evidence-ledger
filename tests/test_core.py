@@ -259,5 +259,55 @@ class StoreAndServiceTests(unittest.TestCase):
             )
 
 
+    def test_answer_retries_once_after_verification_failure(self):
+        class RepairModel:
+            model = "repair-apertus"
+
+            def __init__(self):
+                self.calls = 0
+
+            def generate_json(self, *, system: str, user: str) -> dict:
+                self.calls += 1
+                if system == SUPPORT_PROMPT:
+                    return {"supported": True}
+                if self.calls == 2:
+                    return {
+                        "answer": "Retention is ninety days.",
+                        "abstain": False,
+                        "citations": [
+                            {
+                                "chunk_id": 1,
+                                "quote": "Retention is 90 days.",
+                            }
+                        ],
+                    }
+                return {
+                    "answer": "Retention is ninety days.",
+                    "abstain": False,
+                    "citations": [
+                        {
+                            "chunk_id": 1,
+                            "quote": "The retention period is ninety days.",
+                        }
+                    ],
+                }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            with EvidenceStore(Path(tmp) / "evidence.db") as store:
+                model = RepairModel()
+                service = EvidenceService(store, model)
+                service.ingest_text(
+                    source="policy.md",
+                    text="The retention period is ninety days.",
+                )
+                result = service.answer("What is the retention period?")
+
+        self.assertFalse(result.abstain)
+        self.assertEqual(len(result.citations), 1)
+        self.assertEqual(model.calls, 3)
+        self.assertIn("answer_attempts", result.ledger)
+        self.assertEqual(len(result.ledger["answer_attempts"]), 2)
+
+
 if __name__ == "__main__":
     unittest.main()
