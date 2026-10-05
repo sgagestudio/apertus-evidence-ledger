@@ -105,3 +105,30 @@ MVP supports UTF-8 text and Markdown. Next work for the hackathon is a small bro
 ## License
 
 MIT.
+
+
+## Browser demo
+
+After indexing at least one document, run:
+
+    apertus-evidence-web
+
+By default the UI binds only to `127.0.0.1:8787`. It sends questions to the same evidence-verification pipeline used by the CLI and displays the verified citations plus the answer ledger.
+
+Environment variables:
+
+- `APERTUS_EVIDENCE_DB` — SQLite database path.
+- `APERTUS_BASE_URL` — OpenAI-compatible Apertus endpoint.
+- `APERTUS_MODEL` — served model name.
+- `APERTUS_API_KEY` — optional endpoint token.
+- `APERTUS_WEB_HOST` / `APERTUS_WEB_PORT` — bind address/port.
+
+## Multilingual grounded evaluation
+
+A small reproducible four-language evaluation set lives at `eval/multilingual.jsonl` (English, Spanish, German and French).
+
+Run it against a real Apertus endpoint:
+
+    apertus-evidence-eval --dataset eval/multilingual.jsonl --base-url http://localhost:8000/v1 --out evaluation-report.json
+
+A case passes only when Apertus returns a non-abstaining answer and its verified citations contain the required source evidence. Invalid chunk IDs or invented quotes fail earlier in the citation verifier, so the reported grounded accuracy is measured after structural verification.
