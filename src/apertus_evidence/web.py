@@ -12,6 +12,22 @@ from .store import EvidenceStore
 
 MAX_BODY_BYTES = 32_768
 
+
+def _client_from_env() -> ApertusClient:
+    """Build the model client from Hack Apertus standard vars, with legacy fallbacks."""
+    return ApertusClient(
+        base_url=(
+            os.getenv("LLM_BASE_URL")
+            or os.getenv("APERTUS_BASE_URL", "http://localhost:8000/v1")
+        ),
+        model=(
+            os.getenv("LLM_NAME")
+            or os.getenv("APERTUS_MODEL", "swiss-ai/Apertus-v1.5-8B")
+        ),
+        api_key=os.getenv("LLM_API_KEY") or os.getenv("APERTUS_API_KEY"),
+    )
+
+
 INDEX_HTML = """<!doctype html>
 <html lang="en">
 <head>
@@ -180,11 +196,7 @@ class EvidenceRequestHandler(BaseHTTPRequestHandler):
             return
 
         db_path = os.getenv("APERTUS_EVIDENCE_DB", "evidence.db")
-        client = ApertusClient(
-            base_url=os.getenv("APERTUS_BASE_URL", "http://localhost:8000/v1"),
-            model=os.getenv("APERTUS_MODEL", "swiss-ai/Apertus-v1.5-8B"),
-            api_key=os.getenv("APERTUS_API_KEY"),
-        )
+        client = _client_from_env()
 
         try:
             with EvidenceStore(db_path) as store:
