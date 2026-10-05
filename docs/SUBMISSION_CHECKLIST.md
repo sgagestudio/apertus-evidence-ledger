@@ -19,8 +19,9 @@ The organizer states that the final submission is handled through the Hack Apert
 - [x] Explicit abstention flow.
 - [x] Evidence ledger with evidence and model-output digests.
 - [x] Local provenance-focused browser UI.
-- [x] 18/18 current real-model regression cases.
-- [x] Independent 12/12 real-model holdout (6 grounded + 6 abstentions, six languages).
+- [x] Current isolated real-model regression: 17/18; one supported Romansh answer rejected for a non-exact source quote. Historical pre-isolation 18/18 artifact retained but not used as the current headline.
+- [x] Original separate holdout 12/12; unchanged holdout also revalidated 12/12 with current per-case isolation.
+- [x] Current multi-evidence real-model set: 3/3.
 - [x] 19/19 current software tests.
 - [x] Document prompt-injection cases included.
 - [x] Technical report committed.
@@ -64,7 +65,7 @@ A local-first, auditable AI assistant powered by Apertus that grounds answers in
 ## Claims not to make
 
 Do not claim:
-- that 18/18 means Apertus has 100% general accuracy;
+- that any small-suite result (historical 18/18, current 17/18, holdout 12/12, or multi-evidence 3/3) means Apertus has general 100% accuracy;
 - that hashes prove document authorship or provide immutable non-repudiation;
 - that the MVP supports production PDF provenance if that has not been implemented;
 - that the local Q4 quantization is an official Hack Apertus-provided quantization;
