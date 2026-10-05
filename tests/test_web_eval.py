@@ -158,7 +158,7 @@ class EvaluationDatasetTests(unittest.TestCase):
                 },
             ]
             path.write_text(
-                "\\n".join(json.dumps(row) for row in rows) + "\\n",
+                "\n".join(json.dumps(row) for row in rows) + "\n",
                 encoding="utf-8",
             )
             report = run_evaluation(str(path), IsolationModel())
