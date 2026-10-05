@@ -107,7 +107,7 @@ CI runs both checks on every push and pull request.
 
 ## Current scope
 
-MVP supports UTF-8 text and Markdown, a local browser UI, real Apertus-backed inference, a multilingual support gate, exact-quote verification, and a six-language grounded/abstention regression set. The current real local Apertus run passes 18/18 evaluation cases (grounded, missing-information abstention, and document prompt-injection cases), while the current software suite passes 19/19 tests. If a supported answer fails deterministic citation verification, the service permits one bounded correction attempt and then re-verifies the corrected output. The evaluation is deliberately small and synthetic; see `docs/TECHNICAL_REPORT.md` for methodology and limitations.
+MVP supports UTF-8 text and Markdown, a local browser UI, real Apertus-backed inference, a multilingual support gate, exact-quote verification, and a six-language grounded/abstention regression set. On the current per-case-isolated evaluator, the latest real local Apertus run passes 17/18 regression cases, 12/12 holdout cases, and 3/3 multi-evidence cases; the software suite passes 19/19 tests. The one regression miss is a supported Romansh case whose generated citation failed the exact-source-quote contract, so the system rejected it rather than accepting an unverifiable answer. A historical pre-isolation run passed 18/18 and is retained as an earlier artifact, not the current headline result. If a supported answer fails deterministic citation verification, the service permits one bounded correction attempt and then re-verifies the corrected output. The evaluation is deliberately small and synthetic; see `docs/TECHNICAL_REPORT.md` for methodology and limitations.
 
 ## Licensing
 
@@ -144,7 +144,7 @@ The main regression/hardening set lives at `eval/multilingual.jsonl` and current
 - 6 missing-information abstentions;
 - 6 retrieved-document prompt-injection abstentions.
 
-A separate `eval/holdout.jsonl` contains 12 independent synthetic cases (6 grounded + 6 abstentions) across the same six languages. An additional `eval/multievidence.jsonl` set exercises questions that require citing two facts from separated chunks; it is kept distinct from the frozen October 5 results until a fresh real-model run is recorded. The holdout was evaluated without modifying the dataset after the run and passed 12/12 with real local Apertus.
+A separate `eval/holdout.jsonl` contains 12 synthetic cases (6 grounded + 6 abstentions) across the same six languages. It passed 12/12 in the original frozen holdout run and again in the October 6 per-case-isolated revalidation. An additional `eval/multievidence.jsonl` set exercises questions that require citing two facts from separated chunks; the current isolated real-model run passes 3/3. The October 6 raw summaries are frozen under `eval/results/`.
 
 Run either dataset against a real Apertus endpoint:
 
