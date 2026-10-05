@@ -57,5 +57,31 @@ class EvaluationDatasetTests(unittest.TestCase):
                 load_cases(path)
 
 
+    def test_evaluator_records_verification_failure(self):
+        from apertus_evidence.evaluation import evaluate_case
+        from apertus_evidence.service import EvidenceService
+        from apertus_evidence.store import EvidenceStore
+
+        class InvalidModel:
+            model = "invalid"
+            def generate_json(self, *, system: str, user: str) -> dict:
+                return {"answer": "unsupported answer", "abstain": False, "citations": []}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            with EvidenceStore(Path(tmp) / "eval.db") as store:
+                result = evaluate_case(
+                    {
+                        "id": "reject",
+                        "language": "en",
+                        "source_text": "Only approved auditors have access.",
+                        "question": "Who has access?",
+                        "required_evidence_substring": "Only approved auditors have access.",
+                    },
+                    EvidenceService(store, InvalidModel()),
+                )
+        self.assertFalse(result.passed)
+        self.assertIn("rejected model output", result.reason)
+
+
 if __name__ == "__main__":
     unittest.main()
