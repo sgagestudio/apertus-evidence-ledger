@@ -13,6 +13,8 @@ dependencies = []
 
 [project.scripts]
 apertus-evidence = "apertus_evidence.cli:main"
+apertus-evidence-web = "apertus_evidence.web:main"
+apertus-evidence-eval = "apertus_evidence.evaluation:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
