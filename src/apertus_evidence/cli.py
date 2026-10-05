@@ -29,13 +29,19 @@ def build_parser() -> argparse.ArgumentParser:
     ask.add_argument("question")
     ask.add_argument(
         "--base-url",
-        default=os.getenv("APERTUS_BASE_URL", "http://localhost:8000/v1"),
+        default=(
+            os.getenv("LLM_BASE_URL")
+            or os.getenv("APERTUS_BASE_URL", "http://localhost:8000/v1")
+        ),
     )
     ask.add_argument(
         "--model",
-        default=os.getenv("APERTUS_MODEL", "swiss-ai/Apertus-v1.5-8B"),
+        default=(
+            os.getenv("LLM_NAME")
+            or os.getenv("APERTUS_MODEL", "swiss-ai/Apertus-v1.5-8B")
+        ),
     )
-    ask.add_argument("--api-key-env", default="APERTUS_API_KEY")
+    ask.add_argument("--api-key-env", default="LLM_API_KEY")
     ask.add_argument("--top-k", type=int, default=6)
     ask.add_argument("--ledger-out")
 
@@ -60,6 +66,8 @@ def main() -> int:
             return 0
 
         api_key = os.getenv(args.api_key_env) if args.api_key_env else None
+        if not api_key and args.api_key_env == "LLM_API_KEY":
+            api_key = os.getenv("APERTUS_API_KEY")
         client = ApertusClient(
             base_url=args.base_url,
             model=args.model,
