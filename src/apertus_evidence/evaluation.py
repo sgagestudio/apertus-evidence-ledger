@@ -107,9 +107,13 @@ def run_evaluation(dataset: str, client: ApertusClient) -> dict:
     cases = load_cases(dataset)
     results: list[EvalResult] = []
     with tempfile.TemporaryDirectory() as tmp:
-        with EvidenceStore(Path(tmp) / "eval.db") as store:
-            service = EvidenceService(store, client)
-            for case in cases:
+        for index, case in enumerate(cases):
+            # Each case gets a fresh store. Reusing one index across cases can
+            # leak evidence from an earlier case into a later retrieval and
+            # produce a falsely grounded result.
+            db_path = Path(tmp) / f"case-{index:04d}.db"
+            with EvidenceStore(db_path) as store:
+                service = EvidenceService(store, client)
                 results.append(evaluate_case(case, service))
 
     passed = sum(item.passed for item in results)
