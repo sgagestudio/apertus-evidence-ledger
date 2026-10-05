@@ -100,7 +100,7 @@ CI runs both checks on every push and pull request.
 
 ## Current scope
 
-MVP supports UTF-8 text and Markdown, a local browser UI, real Apertus-backed inference, a multilingual support gate, exact-quote verification, and a six-language grounded/abstention regression set. The current real local Apertus run passes 12/12 evaluation cases and 14/14 software tests. The evaluation is deliberately small and synthetic; see `docs/TECHNICAL_REPORT.md` for methodology and limitations.
+MVP supports UTF-8 text and Markdown, a local browser UI, real Apertus-backed inference, a multilingual support gate, exact-quote verification, and a six-language grounded/abstention regression set. The current real local Apertus run passes 18/18 evaluation cases (grounded, missing-information abstention, and document prompt-injection cases) and 15/15 software tests. The evaluation is deliberately small and synthetic; see `docs/TECHNICAL_REPORT.md` for methodology and limitations.
 
 ## Licensing
 
