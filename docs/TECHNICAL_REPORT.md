@@ -116,7 +116,7 @@ The latest real local Apertus run on the current per-case-isolated evaluator pas
 - grounded answers: **6/6**;
 - missing-information abstentions: **6/6**;
 - document prompt-injection abstentions: **6/6**;
-- current software regression tests: **19/19**.
+- current software regression tests: **20/20**.
 
 An earlier run passed 11/12 because the support gate was over-conservative on a supported Romansh case. The fix was general rather than case-specific: the support prompt now explicitly instructs Apertus to judge evidence in its own language, including low-resource languages.
 
