@@ -100,7 +100,7 @@ CI runs both checks on every push and pull request.
 
 ## Current scope
 
-MVP supports UTF-8 text and Markdown. Next work for the hackathon is a small browser UI, PDF extraction with clear provenance boundaries, multilingual retrieval evaluation and a real Apertus-backed demo/evaluation set.
+MVP supports UTF-8 text and Markdown, a local browser UI, real Apertus-backed inference, a multilingual support gate, exact-quote verification, and a six-language grounded/abstention regression set. The current real local Apertus run passes 12/12 evaluation cases and 14/14 software tests. The evaluation is deliberately small and synthetic; see `docs/TECHNICAL_REPORT.md` for methodology and limitations.
 
 ## Licensing
 
