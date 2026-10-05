@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import os
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from apertus_evidence.evaluation import load_cases, run_evaluation
-from apertus_evidence.web import INDEX_HTML, MAX_BODY_BYTES
+from apertus_evidence.web import INDEX_HTML, MAX_BODY_BYTES, _client_from_env
 
 
 class WebTests(unittest.TestCase):
@@ -19,6 +21,25 @@ class WebTests(unittest.TestCase):
         self.assertIn("Evidence ledger", INDEX_HTML)
         self.assertIn("support_gate_supported", INDEX_HTML)
         self.assertIn("evidence_digest_sha256", INDEX_HTML)
+
+    def test_hack_apertus_standard_llm_environment(self):
+        with patch.dict(
+            os.environ,
+            {
+                "LLM_NAME": "apertus-ci",
+                "LLM_BASE_URL": "http://model.example/v1",
+                "LLM_API_KEY": "test-only-key",
+                "APERTUS_MODEL": "legacy-model",
+                "APERTUS_BASE_URL": "http://legacy.invalid/v1",
+                "APERTUS_API_KEY": "legacy-key",
+            },
+            clear=True,
+        ):
+            client = _client_from_env()
+
+        self.assertEqual(client.model, "apertus-ci")
+        self.assertEqual(client.base_url, "http://model.example/v1")
+        self.assertEqual(client.api_key, "test-only-key")
 
 
 class EvaluationDatasetTests(unittest.TestCase):
