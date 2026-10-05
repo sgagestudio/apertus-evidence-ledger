@@ -11,6 +11,21 @@ from .model import JsonChatModel
 from .store import EvidenceStore, SearchHit
 
 
+SUPPORT_PROMPT = """You are an evidence sufficiency gate running on Apertus.
+Decide only whether the supplied evidence directly contains enough information to answer the question.
+Return exactly one JSON object:
+{"supported": true}
+or
+{"supported": false}
+
+Rules:
+- supported=true only when the requested fact is explicitly stated or follows from a trivial direct reading of the supplied evidence.
+- If the question asks for a detail that is absent, such as a provider, person, price, algorithm, phone number, identifier, date, or other missing attribute, return false.
+- Do not use outside knowledge.
+- Do not answer the question.
+- Do not explain your decision.
+"""
+
 SYSTEM_PROMPT = """You are an evidence-grounded assistant running on Apertus.
 Use only the evidence blocks supplied by the user.
 Return exactly one JSON object with this shape:
@@ -25,7 +40,7 @@ Rules:
 - Every material factual claim must be supported by at least one citation.
 - citation chunk_id values must come from the provided evidence.
 - quote must be an exact substring of that cited chunk.
-- If the evidence is insufficient, set abstain=true, explain the gap briefly in answer,
+- If any required information is still missing, set abstain=true, explain the gap briefly in answer,
   and return an empty citations array.
 - Do not reveal hidden reasoning or chain-of-thought.
 """
@@ -62,28 +77,65 @@ class EvidenceService:
     def answer(self, question: str, *, top_k: int = 6) -> VerifiedAnswer:
         hits = self.store.search(question, limit=top_k)
         if not hits:
-            raw = {
-                "answer": "No relevant evidence found.",
-                "abstain": True,
-                "citations": [],
+            trace = {
+                "support_gate": {
+                    "supported": False,
+                    "reason": "no_retrieved_evidence",
+                },
+                "answer": None,
             }
             return VerifiedAnswer(
-                answer=raw["answer"],
+                answer="No relevant evidence found.",
                 abstain=True,
                 citations=(),
-                ledger=self._ledger(question, hits, raw),
+                ledger=self._ledger(
+                    question,
+                    hits,
+                    trace,
+                    supported=False,
+                ),
             )
 
-        raw = self.model.generate_json(
-            system=SYSTEM_PROMPT,
-            user=self._build_prompt(question, hits),
+        prompt = self._build_prompt(question, hits)
+        support_raw = self.model.generate_json(
+            system=SUPPORT_PROMPT,
+            user=prompt,
         )
-        answer, abstain, citations = verify_model_answer(raw, hits)
+        supported = verify_support_gate(support_raw)
+
+        if not supported:
+            trace = {"support_gate": support_raw, "answer": None}
+            return VerifiedAnswer(
+                answer=(
+                    "The retrieved evidence does not contain enough "
+                    "information to answer this question."
+                ),
+                abstain=True,
+                citations=(),
+                ledger=self._ledger(
+                    question,
+                    hits,
+                    trace,
+                    supported=False,
+                ),
+            )
+
+        answer_raw = self.model.generate_json(
+            system=SYSTEM_PROMPT,
+            user=prompt,
+        )
+        answer, abstain, citations = verify_model_answer(answer_raw, hits)
+        trace = {"support_gate": support_raw, "answer": answer_raw}
         return VerifiedAnswer(
             answer=answer,
             abstain=abstain,
             citations=tuple(citations),
-            ledger=self._ledger(question, hits, raw),
+            ledger=self._ledger(
+                question,
+                hits,
+                trace,
+                supported=True,
+            ),
         )
 
     @staticmethod
@@ -93,23 +145,38 @@ class EvidenceService:
             blocks.append(
                 "\n".join(
                     [
-                        f"[EVIDENCE chunk_id={hit.chunk_id} source={json.dumps(hit.source)} sha256={hit.sha256}]",
+                        (
+                            f"[EVIDENCE chunk_id={hit.chunk_id} "
+                            f"source={json.dumps(hit.source)} "
+                            f"sha256={hit.sha256}]"
+                        ),
                         hit.text,
                         "[/EVIDENCE]",
                     ]
                 )
             )
-        return f"Question:\n{question}\n\nEvidence:\n" + "\n\n".join(blocks)
+        return (
+            f"Question:\n{question}\n\nEvidence:\n"
+            + "\n\n".join(blocks)
+        )
 
-    def _ledger(self, question: str, hits: list[SearchHit], raw: dict) -> dict:
+    def _ledger(
+        self,
+        question: str,
+        hits: list[SearchHit],
+        model_trace: dict,
+        *,
+        supported: bool,
+    ) -> dict:
         evidence_fingerprint = "\n".join(
             f"{hit.chunk_id}:{hit.sha256}" for hit in hits
         )
         return {
-            "version": 1,
+            "version": 2,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "model": self.model.model,
             "question": question,
+            "support_gate_supported": supported,
             "retrieved": [
                 {
                     "chunk_id": hit.chunk_id,
@@ -124,56 +191,99 @@ class EvidenceService:
                 evidence_fingerprint.encode("utf-8")
             ).hexdigest(),
             "model_output_digest_sha256": hashlib.sha256(
-                json.dumps(raw, sort_keys=True, ensure_ascii=False).encode("utf-8")
+                json.dumps(
+                    model_trace,
+                    sort_keys=True,
+                    ensure_ascii=False,
+                ).encode("utf-8")
             ).hexdigest(),
         }
+
+
+def verify_support_gate(raw: dict) -> bool:
+    if set(raw) != {"supported"}:
+        raise EvidenceVerificationError(
+            "support gate must return exactly one supported field"
+        )
+    supported = raw.get("supported")
+    if not isinstance(supported, bool):
+        raise EvidenceVerificationError(
+            "support gate supported must be boolean"
+        )
+    return supported
 
 
 def _normalize_ws(value: str) -> str:
     return " ".join(value.split())
 
 
-def verify_model_answer(raw: dict, hits: list[SearchHit]) -> tuple[str, bool, list[dict]]:
+def verify_model_answer(
+    raw: dict,
+    hits: list[SearchHit],
+) -> tuple[str, bool, list[dict]]:
     answer = raw.get("answer")
     abstain = raw.get("abstain")
     citations = raw.get("citations")
 
     if not isinstance(answer, str) or not answer.strip():
-        raise EvidenceVerificationError("model answer must be a non-empty string")
+        raise EvidenceVerificationError(
+            "model answer must be a non-empty string"
+        )
     if not isinstance(abstain, bool):
-        raise EvidenceVerificationError("model abstain must be boolean")
+        raise EvidenceVerificationError(
+            "model abstain must be boolean"
+        )
     if not isinstance(citations, list):
-        raise EvidenceVerificationError("model citations must be a list")
+        raise EvidenceVerificationError(
+            "model citations must be a list"
+        )
 
     if abstain:
         if citations:
-            raise EvidenceVerificationError("abstaining answers must not contain citations")
+            raise EvidenceVerificationError(
+                "abstaining answers must not contain citations"
+            )
         return answer.strip(), True, []
 
     if not citations:
-        raise EvidenceVerificationError("non-abstaining answers require citations")
+        raise EvidenceVerificationError(
+            "non-abstaining answers require citations"
+        )
 
     by_id = {hit.chunk_id: hit for hit in hits}
     verified: list[dict] = []
 
     for item in citations:
         if not isinstance(item, dict):
-            raise EvidenceVerificationError("each citation must be an object")
+            raise EvidenceVerificationError(
+                "each citation must be an object"
+            )
         chunk_id = item.get("chunk_id")
         quote = item.get("quote")
 
-        # Models sometimes serialize an integer JSON field as a decimal string.
-        # Accept that narrow representation only; never coerce floats, booleans,
-        # signs, whitespace-padded values, or arbitrary strings.
-        if isinstance(chunk_id, str) and chunk_id.isascii() and chunk_id.isdecimal():
+        if (
+            isinstance(chunk_id, str)
+            and chunk_id.isascii()
+            and chunk_id.isdecimal()
+        ):
             chunk_id = int(chunk_id)
 
-        if isinstance(chunk_id, bool) or not isinstance(chunk_id, int) or chunk_id not in by_id:
-            raise EvidenceVerificationError(f"citation references unknown chunk_id: {chunk_id!r}")
+        if (
+            isinstance(chunk_id, bool)
+            or not isinstance(chunk_id, int)
+            or chunk_id not in by_id
+        ):
+            raise EvidenceVerificationError(
+                f"citation references unknown chunk_id: {chunk_id!r}"
+            )
         if not isinstance(quote, str) or not quote.strip():
-            raise EvidenceVerificationError("citation quote must be non-empty")
+            raise EvidenceVerificationError(
+                "citation quote must be non-empty"
+            )
         if len(quote) > 500:
-            raise EvidenceVerificationError("citation quote exceeds 500 characters")
+            raise EvidenceVerificationError(
+                "citation quote exceeds 500 characters"
+            )
 
         normalized_chunk = _normalize_ws(by_id[chunk_id].text)
         normalized_quote = _normalize_ws(quote)
@@ -181,6 +291,8 @@ def verify_model_answer(raw: dict, hits: list[SearchHit]) -> tuple[str, bool, li
             raise EvidenceVerificationError(
                 f"citation quote is not present in chunk_id {chunk_id}"
             )
-        verified.append({"chunk_id": chunk_id, "quote": quote.strip()})
+        verified.append(
+            {"chunk_id": chunk_id, "quote": quote.strip()}
+        )
 
     return answer.strip(), False, verified
