@@ -20,6 +20,7 @@ The organizer states that the final submission is handled through the Hack Apert
 - [x] Evidence ledger with evidence and model-output digests.
 - [x] Local provenance-focused browser UI.
 - [x] 18/18 current real-model regression cases.
+- [x] Independent 12/12 real-model holdout (6 grounded + 6 abstentions, six languages).
 - [x] 15/15 current software tests.
 - [x] Document prompt-injection cases included.
 - [x] Technical report committed.
@@ -33,7 +34,8 @@ The organizer states that the final submission is handled through the Hack Apert
 
 - [ ] Expand with a few paraphrase / multi-chunk cases if they add signal without weakening reliability.
 - [ ] Re-run clean-clone unit tests.
-- [ ] Re-run real Apertus evaluation and freeze the final result.
+- [x] Run and freeze an independent real Apertus holdout.
+- [ ] Re-run the regression + holdout immediately before final submission and freeze the final result.
 - [ ] Capture final browser screenshots using synthetic data only.
 - [ ] Record the short demo using `docs/DEMO_SCRIPT.md`.
 - [ ] Convert/finalize the technical report in the format requested by the organizer.
