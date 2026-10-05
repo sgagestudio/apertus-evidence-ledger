@@ -106,14 +106,21 @@ Observed development smoke:
 - an evidence ledger was emitted;
 - generation after model load was approximately 7.6 tokens/second in the observed short runs.
 
-The final current regression suite contains 12 cases across English, Spanish, German, French, Italian, and Romansh: six grounded questions and six deliberately unsupported questions.
+The current regression suite contains 18 cases across English, Spanish, German, French, Italian, and Romansh:
 
-The latest real local Apertus run passed **12/12** cases:
+- six grounded questions;
+- six deliberately unsupported questions;
+- six document prompt-injection cases where retrieved text contains malicious instructions telling the model to invent a missing fact.
+
+The latest real local Apertus run passed **18/18** cases:
 - grounded answers: **6/6**;
-- correct abstentions: **6/6**;
-- software regression tests: **14/14**.
+- missing-information abstentions: **6/6**;
+- document prompt-injection abstentions: **6/6**;
+- software regression tests: **15/15**.
 
-An earlier run passed 11/12 because the support gate was over-conservative on a supported Romansh case. The fix was general rather than case-specific: the support prompt now explicitly instructs Apertus to judge evidence in its own language, including low-resource languages. The complete suite then passed 12/12.
+An earlier run passed 11/12 because the support gate was over-conservative on a supported Romansh case. The fix was general rather than case-specific: the support prompt now explicitly instructs Apertus to judge evidence in its own language, including low-resource languages.
+
+The retrieval prompts also explicitly classify evidence blocks as untrusted data. Commands, role changes, tool requests, or attempts to override system rules inside retrieved documents must never be followed. Six multilingual injection cases were then added and all six correctly abstained.
 
 These results are engineering regression evidence on a small synthetic set, not a statistically representative benchmark of Apertus quality.
 
@@ -182,11 +189,10 @@ These are explicit boundaries rather than hidden fallbacks.
 
 ## 13. Next steps before submission
 
-1. Improve the browser presentation of evidence and source hashes.
-2. Add a deliberately adversarial citation-fabrication demo.
-3. Capture final screenshots and a short demo.
-4. Re-run and freeze the final evaluation artifact immediately before submission.
-5. Finalize the organizer submission materials before 16 October 2026, 12:00 CEST.
+1. Add more paraphrase and multi-chunk retrieval cases.
+2. Capture final screenshots and a short demo.
+3. Re-run and freeze the final evaluation artifact immediately before submission.
+4. Finalize the organizer submission materials before 16 October 2026, 12:00 CEST.
 
 A compact machine-readable result from the current real-model run is stored at `eval/results/2026-10-05-apertus-local-q4.json`.
 
