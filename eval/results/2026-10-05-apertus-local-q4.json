@@ -1,0 +1,16 @@
+{
+  "run_date": "2026-10-05",
+  "model": "apertus-local",
+  "base_model": "swiss-ai/Apertus-v1.5-8B",
+  "runtime": "llama.cpp",
+  "quantization": "Q4_K_M",
+  "context_tokens": 4096,
+  "cases": 12,
+  "passed": 12,
+  "grounded_accuracy": 1.0,
+  "supported_cases": {"passed": 6, "total": 6},
+  "abstention_cases": {"passed": 6, "total": 6},
+  "languages": ["en", "es", "de", "fr", "it", "rm"],
+  "unit_tests": {"passed": 14, "total": 14},
+  "limitations": "Small synthetic smoke/regression set; not a statistically representative benchmark."
+}
