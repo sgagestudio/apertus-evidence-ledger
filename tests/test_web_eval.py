@@ -125,7 +125,7 @@ class EvaluationDatasetTests(unittest.TestCase):
             def generate_json(self, *, system: str, user: str) -> dict:
                 if "evidence sufficiency gate" in system:
                     return {"supported": "BLUEBIRD" in user}
-                match = re.search(r"chunk_id=(\\d+)", user)
+                match = re.search(r"chunk_id=(\d+)", user)
                 if match is None:
                     raise AssertionError("missing chunk id in evaluation prompt")
                 return {
