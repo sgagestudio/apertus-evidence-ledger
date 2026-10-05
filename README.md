@@ -102,9 +102,15 @@ CI runs both checks on every push and pull request.
 
 MVP supports UTF-8 text and Markdown. Next work for the hackathon is a small browser UI, PDF extraction with clear provenance boundaries, multilingual retrieval evaluation and a real Apertus-backed demo/evaluation set.
 
-## License
+## Licensing
 
-MIT.
+Hack Apertus output is split by artifact type to match the event terms:
+
+- Source code and software configuration: **Apache License 2.0** (`LICENSE`).
+- Documentation, designs, reports, and other non-code text authored for the project: **CC BY 4.0** (`LICENSES/CC-BY-4.0.txt`).
+- Submitted evaluation dataset: **CDLA-Permissive-2.0** (`LICENSES/CDLA-Permissive-2.0.txt`).
+
+Third-party components retain their own licenses.
 
 
 ## Browser demo
