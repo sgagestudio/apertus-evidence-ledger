@@ -21,6 +21,7 @@ or
 Rules:
 - supported=true only when the requested fact is explicitly stated or follows from a trivial direct reading of the supplied evidence.
 - If any information required to answer the question is absent from the supplied evidence, return false.
+- The question and evidence may be in any language, including low-resource languages. Judge whether the evidence answers the question in its own language; do not require English wording or translation.
 - Do not use outside knowledge.
 - Do not answer the question.
 - Do not explain your decision.
