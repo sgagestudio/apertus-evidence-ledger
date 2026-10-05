@@ -106,9 +106,16 @@ Observed development smoke:
 - an evidence ledger was emitted;
 - generation after model load was approximately 7.6 tokens/second in the observed short runs.
 
-A first four-language smoke set (English, Spanish, German, French) passed 4/4 grounded cases after the strict numeric citation-ID normalization described above.
+The final current regression suite contains 12 cases across English, Spanish, German, French, Italian, and Romansh: six grounded questions and six deliberately unsupported questions.
 
-The evaluation suite has since been expanded to include Italian and Romansh plus missing-information / abstention cases. Results should be interpreted as engineering regression tests, not as a statistically representative model benchmark.
+The latest real local Apertus run passed **12/12** cases:
+- grounded answers: **6/6**;
+- correct abstentions: **6/6**;
+- software regression tests: **14/14**.
+
+An earlier run passed 11/12 because the support gate was over-conservative on a supported Romansh case. The fix was general rather than case-specific: the support prompt now explicitly instructs Apertus to judge evidence in its own language, including low-resource languages. The complete suite then passed 12/12.
+
+These results are engineering regression evidence on a small synthetic set, not a statistically representative benchmark of Apertus quality.
 
 ## 9. Evaluation methodology
 
@@ -175,13 +182,20 @@ These are explicit boundaries rather than hidden fallbacks.
 
 ## 13. Next steps before submission
 
-1. Complete the expanded multilingual + abstention evaluation.
-2. Add a compact machine-readable evaluation report to the repository.
-3. Improve the browser presentation of evidence and source hashes.
-4. Add a deliberately adversarial citation-fabrication demo.
-5. Document a clean local Apertus serving path and reproducible hardware/runtime measurements.
-6. Finalize the Hack Apertus submission materials before 16 October 2026, 12:00 CEST.
+1. Improve the browser presentation of evidence and source hashes.
+2. Add a deliberately adversarial citation-fabrication demo.
+3. Capture final screenshots and a short demo.
+4. Re-run and freeze the final evaluation artifact immediately before submission.
+5. Finalize the organizer submission materials before 16 October 2026, 12:00 CEST.
+
+A compact machine-readable result from the current real-model run is stored at `eval/results/2026-10-05-apertus-local-q4.json`.
 
 ## 14. Open-source status
 
-The project is public and licensed under MIT.
+The project is public. Hackathon artifacts are licensed by type to match the Hack Apertus terms:
+
+- source code and software configuration: **Apache License 2.0**;
+- documentation, designs, reports, and other project text: **CC BY 4.0**;
+- submitted evaluation data: **CDLA-Permissive-2.0**.
+
+Third-party components retain their respective licences.
