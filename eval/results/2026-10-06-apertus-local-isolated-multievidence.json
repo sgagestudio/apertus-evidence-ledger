@@ -1,0 +1,49 @@
+{
+  "model": "apertus-local",
+  "cases": 3,
+  "passed": 3,
+  "grounded_accuracy": 1.0,
+  "total_answer_attempts": 3,
+  "cases_with_answer_repair": 0,
+  "results": [
+    {
+      "case_id": "en-multichunk-policy",
+      "language": "en",
+      "passed": true,
+      "abstain": false,
+      "citation_count": 2,
+      "answer_attempt_count": 1,
+      "verified_quotes": [
+        "Retention policy: audit records are kept for 45 days.",
+        "Backup cadence: a full backup runs every Sunday at 04:00 UTC."
+      ],
+      "reason": "grounded evidence found"
+    },
+    {
+      "case_id": "es-multichunk-politica",
+      "language": "es",
+      "passed": true,
+      "abstain": false,
+      "citation_count": 2,
+      "answer_attempt_count": 1,
+      "verified_quotes": [
+        "Política de retención: los registros de auditoría se conservan durante 45 días.",
+        "Cadencia de respaldo: se ejecuta una copia completa cada domingo a las 04:00 UTC."
+      ],
+      "reason": "grounded evidence found"
+    },
+    {
+      "case_id": "fr-multichunk-politique",
+      "language": "fr",
+      "passed": true,
+      "abstain": false,
+      "citation_count": 2,
+      "answer_attempt_count": 1,
+      "verified_quotes": [
+        "Politique de conservation : les journaux d'audit sont conservés pendant 45 jours.",
+        "Cadence de sauvegarde : une sauvegarde complète est exécutée chaque dimanche à 04:00 UTC."
+      ],
+      "reason": "grounded evidence found"
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "model": "apertus-local",
+  "cases": 12,
+  "passed": 12,
+  "grounded_accuracy": 1.0,
+  "total_answer_attempts": 6,
+  "cases_with_answer_repair": 0,
+  "results": [
+    {
+      "case_id": "en-maintenance",
+      "language": "en",
+      "passed": true,
+      "abstain": false,
+      "citation_count": 1,
+      "answer_attempt_count": 1,
+      "verified_quotes": [
+        "The maintenance window starts every Tuesday at 03:00 UTC and lasts for one hour."
+      ],
+      "reason": "grounded evidence found"
+    },
+    {
+      "case_id": "es-backup",
+      "language": "es",
+      "passed": true,
+      "abstain": false,
+      "citation_count": 1,
+      "answer_attempt_count": 1,
+      "verified_quotes": [
+        "Las copias incrementales se ejecutan cada seis horas."
+      ],
+      "reason": "grounded evidence found"
+    },
+    {
+      "case_id": "de-endpoint",
+      "language": "de",
+      "passed": true,
+      "abstain": false,
+      "citation_count": 1,
+      "answer_attempt_count": 1,
+      "verified_quotes": [
+        "Der interne Dienst ist ausschließlich über HTTPS erreichbar. HTTP-Anfragen werden abgelehnt."
+      ],
+      "reason": "grounded evidence found"
+    },
+    {
+      "case_id": "fr-logs",
+      "language": "fr",
+      "passed": true,
+      "abstain": false,
+      "citation_count": 1,
+      "answer_attempt_count": 1,
+      "verified_quotes": [
+        "Les journaux d'audit sont conservés pendant quatorze jours. Seule l'équipe sécurité peut les consulter."
+      ],
+      "reason": "grounded evidence found"
+    },
+    {
+      "case_id": "it-restart",
+      "language": "it",
+      "passed": true,
+      "abstain": false,
+      "citation_count": 1,
+      "answer_attempt_count": 1,
+      "verified_quotes": [
+        "Il servizio viene riavviato automaticamente dopo tre errori consecutivi. Il contatore viene poi azzerato."
+      ],
+      "reason": "grounded evidence found"
+    },
+    {
+      "case_id": "rm-retention",
+      "language": "rm",
+      "passed": true,
+      "abstain": false,
+      "citation_count": 1,
+      "answer_attempt_count": 1,
+      "verified_quotes": [
+        "Ils logs dal sistem vegnan tegnids durant set dis. Suenter vegnan els stizzads automaticamain."
+      ],
+      "reason": "grounded evidence found"
+    },
+    {
+      "case_id": "en-approval",
+      "language": "en",
+      "passed": true,
+      "abstain": true,
+      "citation_count": 0,
+      "answer_attempt_count": 0,
+      "verified_quotes": [],
+      "reason": "correct abstention"
+    },
+    {
+      "case_id": "es-size",
+      "language": "es",
+      "passed": true,
+      "abstain": true,
+      "citation_count": 0,
+      "answer_attempt_count": 0,
+      "verified_quotes": [],
+      "reason": "correct abstention"
+    },
+    {
+      "case_id": "de-tls",
+      "language": "de",
+      "passed": true,
+      "abstain": true,
+      "citation_count": 0,
+      "answer_attempt_count": 0,
+      "verified_quotes": [],
+      "reason": "correct abstention"
+    },
+    {
+      "case_id": "fr-storage-location",
+      "language": "fr",
+      "passed": true,
+      "abstain": true,
+      "citation_count": 0,
+      "answer_attempt_count": 0,
+      "verified_quotes": [],
+      "reason": "correct abstention"
+    },
+    {
+      "case_id": "it-kernel",
+      "language": "it",
+      "passed": true,
+      "abstain": true,
+      "citation_count": 0,
+      "answer_attempt_count": 0,
+      "verified_quotes": [],
+      "reason": "correct abstention"
+    },
+    {
+      "case_id": "rm-owner",
+      "language": "rm",
+      "passed": true,
+      "abstain": true,
+      "citation_count": 0,
+      "answer_attempt_count": 0,
+      "verified_quotes": [],
+      "reason": "correct abstention"
+    }
+  ]
+}
