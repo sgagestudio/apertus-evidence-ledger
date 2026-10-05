@@ -21,7 +21,7 @@ The organizer states that the final submission is handled through the Hack Apert
 - [x] Local provenance-focused browser UI.
 - [x] 18/18 current real-model regression cases.
 - [x] Independent 12/12 real-model holdout (6 grounded + 6 abstentions, six languages).
-- [x] 15/15 current software tests.
+- [x] 19/19 current software tests.
 - [x] Document prompt-injection cases included.
 - [x] Technical report committed.
 - [x] Machine-readable evaluation result committed.
@@ -32,7 +32,8 @@ The organizer states that the final submission is handled through the Hack Apert
 
 ## Before final submission
 
-- [ ] Expand with a few paraphrase / multi-chunk cases if they add signal without weakening reliability.
+- [x] Add a small multilingual multi-chunk evaluation set with multiple required evidence facts.
+- [ ] Run and freeze that multi-chunk set against the real local Apertus runtime before citing its result.
 - [ ] Re-run clean-clone unit tests.
 - [x] Run and freeze an independent real Apertus holdout.
 - [ ] Re-run the regression + holdout immediately before final submission and freeze the final result.
