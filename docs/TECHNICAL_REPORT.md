@@ -112,7 +112,7 @@ The current regression suite contains 18 cases across English, Spanish, German, 
 - six deliberately unsupported questions;
 - six document prompt-injection cases where retrieved text contains malicious instructions telling the model to invent a missing fact.
 
-The latest real local Apertus run passed **18/18** cases:
+The latest real local Apertus run on the current per-case-isolated evaluator passed **17/18** cases:
 - grounded answers: **6/6**;
 - missing-information abstentions: **6/6**;
 - document prompt-injection abstentions: **6/6**;
@@ -128,12 +128,16 @@ These results are engineering regression evidence on a small synthetic set, not 
 
 A separate 12-case synthetic holdout file (`eval/holdout.jsonl`) was kept outside the main hardening set and evaluated without modifying the dataset after the run.
 
-The real local Apertus holdout result was **12/12**:
+The real local Apertus holdout result was **12/12**, and the unchanged file also passed **12/12** in the October 6 isolated revalidation:
 - grounded supported questions: **6/6**;
 - missing-information abstentions: **6/6**;
 - languages: English, Spanish, German, French, Italian, and Romansh.
 
-The frozen summary is stored at `eval/results/2026-10-05-apertus-local-holdout.json`. This provides an independent engineering check beyond the 18-case regression suite, while remaining too small and synthetic to support a general model-accuracy claim.
+The original frozen summary is stored at `eval/results/2026-10-05-apertus-local-holdout.json`; the October 6 isolated revalidation is stored at `eval/results/2026-10-06-apertus-local-isolated-holdout.json`. The original run was kept separate from the hardening set at the time it was first evaluated; after subsequent system work, later re-runs are regression evidence rather than a new blind benchmark. The set remains too small and synthetic to support a general model-accuracy claim.
+
+### Multi-evidence check
+
+`eval/multievidence.jsonl` contains three EN/ES/FR cases requiring two separated source facts and two verified citations. The current isolated real-model run passed **3/3**. This specifically exercises multi-chunk evidence coverage without weakening the exact-quote contract.
 
 ## 9. Evaluation methodology
 
@@ -208,8 +212,11 @@ These are explicit boundaries rather than hidden fallbacks.
 4. Finalize the organizer submission materials before 16 October 2026, 12:00 CEST.
 
 Machine-readable results are stored at:
-- `eval/results/2026-10-05-apertus-local-q4.json` — 18-case hardening/regression suite;
-- `eval/results/2026-10-05-apertus-local-holdout.json` — separate 12-case holdout.
+- `eval/results/2026-10-05-apertus-local-q4.json` — historical pre-isolation 18-case hardening/regression run;
+- `eval/results/2026-10-05-apertus-local-holdout.json` — original separate 12-case holdout;
+- `eval/results/2026-10-06-apertus-local-isolated-regression.json` — current isolated 18-case regression run (17/18);
+- `eval/results/2026-10-06-apertus-local-isolated-holdout.json` — current isolated holdout revalidation (12/12);
+- `eval/results/2026-10-06-apertus-local-isolated-multievidence.json` — current multi-evidence run (3/3).
 
 ## 14. Open-source status
 
