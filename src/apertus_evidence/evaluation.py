@@ -18,6 +18,7 @@ class EvalResult:
     passed: bool
     abstain: bool
     citation_count: int
+    answer_attempt_count: int
     reason: str
 
 
@@ -63,6 +64,7 @@ def evaluate_case(case: dict, service: EvidenceService) -> EvalResult:
             passed=False,
             abstain=False,
             citation_count=0,
+            answer_attempt_count=0,
             reason=f"rejected model output: {exc}",
         )
 
@@ -91,6 +93,7 @@ def evaluate_case(case: dict, service: EvidenceService) -> EvalResult:
         passed=passed,
         abstain=result.abstain,
         citation_count=len(result.citations),
+        answer_attempt_count=int(result.ledger.get("answer_attempt_count", 0)),
         reason=reason,
     )
 
@@ -110,6 +113,10 @@ def run_evaluation(dataset: str, client: ApertusClient) -> dict:
         "cases": len(results),
         "passed": passed,
         "grounded_accuracy": passed / len(results),
+        "total_answer_attempts": sum(item.answer_attempt_count for item in results),
+        "cases_with_answer_repair": sum(
+            1 for item in results if item.answer_attempt_count > 1
+        ),
         "results": [asdict(item) for item in results],
     }
 
