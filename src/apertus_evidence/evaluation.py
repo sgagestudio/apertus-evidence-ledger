@@ -6,8 +6,8 @@ import tempfile
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from .model import ApertusClient
-from .service import EvidenceService
+from .model import ApertusClient, ModelError
+from .service import EvidenceService, EvidenceVerificationError
 from .store import EvidenceStore
 
 
@@ -43,7 +43,18 @@ def load_cases(path: str | Path) -> list[dict]:
 def evaluate_case(case: dict, service: EvidenceService) -> EvalResult:
     source = f"eval://{case['id']}"
     service.ingest_text(source=source, text=case["source_text"])
-    result = service.answer(case["question"], top_k=4)
+    try:
+        result = service.answer(case["question"], top_k=4)
+    except (EvidenceVerificationError, ModelError) as exc:
+        return EvalResult(
+            case_id=case["id"],
+            language=case["language"],
+            passed=False,
+            abstain=False,
+            citation_count=0,
+            reason=f"rejected model output: {exc}",
+        )
+
     expected_abstain = case.get("expected_abstain", False)
     if expected_abstain:
         passed = result.abstain and not result.citations
