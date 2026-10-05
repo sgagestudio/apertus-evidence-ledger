@@ -72,7 +72,7 @@ The model endpoint is not exposed by the application.
 
 ### Regression tests
 
-The repository has unit tests covering deterministic chunking, local search, valid citation verification, unknown citation rejection, fabricated quote rejection, strict numeric-ID normalization, evaluation-data validation, rejected model-output handling, and the browser UI surface.
+The repository has unit tests covering deterministic chunking, local search, valid citation verification, unknown citation rejection, fabricated quote rejection, strict numeric-ID normalization, evaluation-data validation, rejected model-output handling, per-case evaluation isolation, multi-evidence requirements, the bounded answer-repair path, and the browser UI surface. When a supported answer fails deterministic citation verification, the service allows exactly one correction attempt that receives the verifier error and the same evidence, then validates the replacement from scratch.
 
 ## 6. Sovereign deployment
 
@@ -116,7 +116,7 @@ The latest real local Apertus run passed **18/18** cases:
 - grounded answers: **6/6**;
 - missing-information abstentions: **6/6**;
 - document prompt-injection abstentions: **6/6**;
-- software regression tests: **15/15**.
+- current software regression tests: **19/19**.
 
 An earlier run passed 11/12 because the support gate was over-conservative on a supported Romansh case. The fix was general rather than case-specific: the support prompt now explicitly instructs Apertus to judge evidence in its own language, including low-resource languages.
 
@@ -141,7 +141,9 @@ Each grounded test case contains:
 - source text;
 - question;
 - language;
-- required evidence substring.
+- one required evidence substring or a list of required evidence substrings.
+
+Each evaluation case is indexed into a fresh temporary SQLite store so evidence from one case cannot leak into retrieval for another case.
 
 It passes only when:
 1. the model does not abstain;
@@ -200,7 +202,7 @@ These are explicit boundaries rather than hidden fallbacks.
 
 ## 13. Next steps before submission
 
-1. Add more paraphrase and multi-chunk retrieval cases.
+1. Run and freeze the new multilingual multi-chunk retrieval set against the real local Apertus runtime; add more cases only if they provide signal without overfitting.
 2. Capture final screenshots and a short demo.
 3. Re-run and freeze the final evaluation artifact immediately before submission.
 4. Finalize the organizer submission materials before 16 October 2026, 12:00 CEST.
