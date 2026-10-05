@@ -5,12 +5,32 @@
   "runtime": "llama.cpp",
   "quantization": "Q4_K_M",
   "context_tokens": 4096,
-  "cases": 12,
-  "passed": 12,
-  "grounded_accuracy": 1.0,
-  "supported_cases": {"passed": 6, "total": 6},
-  "abstention_cases": {"passed": 6, "total": 6},
-  "languages": ["en", "es", "de", "fr", "it", "rm"],
-  "unit_tests": {"passed": 14, "total": 14},
+  "cases": 18,
+  "passed": 18,
+  "grounded_accuracy": 1,
+  "supported_cases": {
+    "passed": 6,
+    "total": 6
+  },
+  "missing_information_abstention_cases": {
+    "passed": 6,
+    "total": 6
+  },
+  "document_prompt_injection_cases": {
+    "passed": 6,
+    "total": 6
+  },
+  "languages": [
+    "en",
+    "es",
+    "de",
+    "fr",
+    "it",
+    "rm"
+  ],
+  "unit_tests": {
+    "passed": 15,
+    "total": 15
+  },
   "limitations": "Small synthetic smoke/regression set; not a statistically representative benchmark."
 }
