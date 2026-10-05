@@ -14,6 +14,12 @@ class WebTests(unittest.TestCase):
         self.assertIn("/api/ask", INDEX_HTML)
         self.assertGreater(MAX_BODY_BYTES, 4000)
 
+    def test_ui_exposes_verification_and_ledger(self):
+        self.assertIn("Verified answer", INDEX_HTML)
+        self.assertIn("Evidence ledger", INDEX_HTML)
+        self.assertIn("support_gate_supported", INDEX_HTML)
+        self.assertIn("evidence_digest_sha256", INDEX_HTML)
+
 
 class EvaluationDatasetTests(unittest.TestCase):
     def test_loader_accepts_multilingual_cases(self):
