@@ -77,7 +77,14 @@ The default endpoint is http://localhost:8000/v1 and the default model name is s
 
 ## Apertus local serving
 
-The official Apertus 1.5 model card documents vLLM serving with the model swiss-ai/Apertus-v1.5-8B. This project consumes the resulting OpenAI-compatible chat-completions endpoint, so the model can stay on infrastructure controlled by the operator.
+The official Apertus 1.5 model card documents vLLM serving with the model `swiss-ai/Apertus-v1.5-8B`. This project consumes an OpenAI-compatible chat-completions endpoint, so the model can stay on infrastructure controlled by the operator.
+
+For the zero-cost development smoke on Windows, the project was also exercised with `llama.cpp` and a third-party Q4_K_M GGUF derivative:
+
+    llama-server -hf Colby/apertus-v1.5-8b-text-Q4_K_M-GGUF:Q4_K_M \
+      --alias apertus-local --host 127.0.0.1 --port 8080 -c 4096 -ngl 99
+
+That GGUF is a development convenience and is **not** claimed to be an official Hack Apertus-provided quantization.
 
 ## Verification behavior
 
@@ -129,13 +136,20 @@ Environment variables:
 - `APERTUS_API_KEY` — optional endpoint token.
 - `APERTUS_WEB_HOST` / `APERTUS_WEB_PORT` — bind address/port.
 
-## Multilingual grounded evaluation
+## Evaluation
 
-A small reproducible four-language evaluation set lives at `eval/multilingual.jsonl` (English, Spanish, German and French).
+The main regression/hardening set lives at `eval/multilingual.jsonl` and currently contains 18 synthetic cases across English, Spanish, German, French, Italian, and Romansh:
 
-Run it against a real Apertus endpoint:
+- 6 grounded supported questions;
+- 6 missing-information abstentions;
+- 6 retrieved-document prompt-injection abstentions.
 
-    apertus-evidence-eval --dataset eval/multilingual.jsonl --base-url http://localhost:8000/v1 --out evaluation-report.json
+A separate `eval/holdout.jsonl` contains 12 independent synthetic cases (6 grounded + 6 abstentions) across the same six languages. The holdout was evaluated without modifying the dataset after the run and passed 12/12 with real local Apertus.
 
-A case passes only when Apertus returns a non-abstaining answer and its verified citations contain the required source evidence. Invalid chunk IDs or invented quotes fail earlier in the citation verifier, so the reported grounded accuracy is measured after structural verification.
-\n\nA separate independent 12-case holdout passes 12/12 with real local Apertus (6 grounded + 6 abstentions across EN/ES/DE/FR/IT/RM). This remains a small synthetic engineering check, not a general accuracy benchmark.\n
+Run either dataset against a real Apertus endpoint:
+
+    apertus-evidence-eval --dataset eval/multilingual.jsonl --base-url http://127.0.0.1:8080/v1 --model apertus-local --out evaluation-report.json
+
+Grounded cases pass only when verified citations contain all required source evidence. Unsupported and injection cases pass only when the system abstains with zero citations. Invalid chunk IDs or invented quotes fail in the deterministic verifier.
+
+These are small synthetic engineering regression/holdout sets, not statistically representative benchmarks of general Apertus accuracy. See `docs/TECHNICAL_REPORT.md` for methodology and limitations.
