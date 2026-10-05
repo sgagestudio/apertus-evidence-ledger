@@ -113,5 +113,60 @@ class StoreAndServiceTests(unittest.TestCase):
             )
 
 
+    def test_decimal_string_chunk_id_is_normalized(self):
+        hits = [
+            SearchHit(
+                chunk_id=7,
+                source="x",
+                ordinal=0,
+                text="Only approved operators may access the system.",
+                sha256="a" * 64,
+                rank=0.0,
+            )
+        ]
+        answer, abstain, citations = verify_model_answer(
+            {
+                "answer": "Access is restricted.",
+                "abstain": False,
+                "citations": [
+                    {
+                        "chunk_id": "7",
+                        "quote": "Only approved operators may access the system.",
+                    }
+                ],
+            },
+            hits,
+        )
+        self.assertFalse(abstain)
+        self.assertEqual(answer, "Access is restricted.")
+        self.assertEqual(citations[0]["chunk_id"], 7)
+
+    def test_non_decimal_string_chunk_id_is_rejected(self):
+        hits = [
+            SearchHit(
+                chunk_id=7,
+                source="x",
+                ordinal=0,
+                text="Only approved operators may access the system.",
+                sha256="a" * 64,
+                rank=0.0,
+            )
+        ]
+        with self.assertRaises(EvidenceVerificationError):
+            verify_model_answer(
+                {
+                    "answer": "Access is restricted.",
+                    "abstain": False,
+                    "citations": [
+                        {
+                            "chunk_id": "7.0",
+                            "quote": "Only approved operators may access the system.",
+                        }
+                    ],
+                },
+                hits,
+            )
+
+
 if __name__ == "__main__":
     unittest.main()
