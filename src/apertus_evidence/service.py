@@ -203,6 +203,11 @@ class EvidenceService:
             "model": self.model.model,
             "question": question,
             "support_gate_supported": supported,
+            "answer_attempt_count": (
+                len(model_trace.get("answer_attempts", []))
+                if isinstance(model_trace.get("answer_attempts"), list)
+                else 0
+            ),
             "retrieved": [
                 {
                     "chunk_id": hit.chunk_id,
