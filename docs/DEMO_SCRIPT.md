@@ -72,12 +72,16 @@ Show `eval/results/2026-10-05-apertus-local-q4.json`.
 
 Current validated result:
 
-- 18 / 18 real-model regression cases;
+- 17 / 18 current isolated real-model regression cases;
 - 6 grounded answers;
 - 6 missing-information abstentions;
 - 6 document prompt-injection abstentions;
 - 6 languages: English, Spanish, German, French, Italian and Romansh;
+- 12 / 12 holdout cases on the current isolated evaluator;
+- 3 / 3 multi-evidence cases requiring two verified facts;
 - 19 / 19 current software tests.
+
+> One supported Romansh regression case is deliberately counted as a miss because its generated quote did not exactly match the retrieved source. The verifier rejected it instead of accepting an unverifiable citation.
 
 Add:
 
