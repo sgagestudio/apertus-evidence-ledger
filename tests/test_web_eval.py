@@ -35,5 +35,27 @@ class EvaluationDatasetTests(unittest.TestCase):
                 load_cases(path)
 
 
+    def test_loader_accepts_abstention_case(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "cases.jsonl"
+            path.write_text(
+                '{"id":"x","language":"en","source_text":"retained 30 days",'
+                '"question":"which cloud?","expected_abstain":true}\n',
+                encoding="utf-8",
+            )
+            cases = load_cases(path)
+            self.assertTrue(cases[0]["expected_abstain"])
+
+    def test_loader_rejects_grounded_case_without_required_evidence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "cases.jsonl"
+            path.write_text(
+                '{"id":"x","language":"en","source_text":"a","question":"b"}\n',
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                load_cases(path)
+
+
 if __name__ == "__main__":
     unittest.main()
