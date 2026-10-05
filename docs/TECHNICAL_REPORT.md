@@ -124,6 +124,17 @@ The retrieval prompts also explicitly classify evidence blocks as untrusted data
 
 These results are engineering regression evidence on a small synthetic set, not a statistically representative benchmark of Apertus quality.
 
+### Independent holdout
+
+A separate 12-case synthetic holdout file (`eval/holdout.jsonl`) was kept outside the main hardening set and evaluated without modifying the dataset after the run.
+
+The real local Apertus holdout result was **12/12**:
+- grounded supported questions: **6/6**;
+- missing-information abstentions: **6/6**;
+- languages: English, Spanish, German, French, Italian, and Romansh.
+
+The frozen summary is stored at `eval/results/2026-10-05-apertus-local-holdout.json`. This provides an independent engineering check beyond the 18-case regression suite, while remaining too small and synthetic to support a general model-accuracy claim.
+
 ## 9. Evaluation methodology
 
 Each grounded test case contains:
@@ -194,7 +205,9 @@ These are explicit boundaries rather than hidden fallbacks.
 3. Re-run and freeze the final evaluation artifact immediately before submission.
 4. Finalize the organizer submission materials before 16 October 2026, 12:00 CEST.
 
-A compact machine-readable result from the current real-model run is stored at `eval/results/2026-10-05-apertus-local-q4.json`.
+Machine-readable results are stored at:
+- `eval/results/2026-10-05-apertus-local-q4.json` — 18-case hardening/regression suite;
+- `eval/results/2026-10-05-apertus-local-holdout.json` — separate 12-case holdout.
 
 ## 14. Open-source status
 
