@@ -89,5 +89,31 @@ class EvaluationDatasetTests(unittest.TestCase):
         self.assertIn("rejected model output", result.reason)
 
 
+    def test_loader_accepts_multiple_required_evidence_substrings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "cases.jsonl"
+            path.write_text(
+                '{"id":"x","language":"en","source_text":"fact a fact b",'
+                '"question":"both?","required_evidence_substrings":["fact a","fact b"]}\n',
+                encoding="utf-8",
+            )
+            cases = load_cases(path)
+            self.assertEqual(
+                cases[0]["required_evidence_substrings"],
+                ["fact a", "fact b"],
+            )
+
+    def test_loader_rejects_empty_required_evidence_substrings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "cases.jsonl"
+            path.write_text(
+                '{"id":"x","language":"en","source_text":"fact",'
+                '"question":"fact?","required_evidence_substrings":[]}\n',
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                load_cases(path)
+
+
 if __name__ == "__main__":
     unittest.main()
